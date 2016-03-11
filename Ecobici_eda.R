@@ -54,13 +54,44 @@ wday(ecobici[[8]])
 
 
 #####Cargar 1 año 2012
-setwd("C:/Users/Stephane/Desktop/ITAM/EstadisticaComputacional/Proyecto_Final/Datos/2012")
+#setwd("C:/Users/Stephane/Desktop/ITAM/EstadisticaComputacional/Proyecto_Final/Datos/2012")
 filename <- dir(".")[grep(".csv",dir("."))]
-dtype <- c("factor","numeric","numeric","numeric","character","character","numeric","character","character")
+filename_2015 <- grep("2015",filename)
+filename <- filename[filename_2015]
+#dtype <- c("factor","numeric","numeric","numeric","character","character","numeric","character","character")
+dtype <- c("character","character","character","character","character","character","character","character","character")
 tmp <- lapply(filename,read.csv, header = TRUE, colClasses = dtype)
 ecobici <- do.call(rbind,tmp)
 rm(tmp)
 head(ecobici)
+
+which(!ecobici$Genero_Usuario %in% c("M","F"))
+ecobici$Genero_Usuario <- as.factor(ecobici$Genero_Usuario)
+
+
+ecobici$Edad_Usuario <- as.numeric(ecobici$Edad_Usuario)
+
+is.numeric(ecobici$Ciclo_Estacion_Retiro)
+
+sort(as.numeric(unique(ecobici$Ciclo_Estacion_Retiro)))
+
+ecobici$Ciclo_Estacion_Retiro <- as.numeric(ecobici$Ciclo_Estacion_A)
+
+sort(as.numeric(unique(ecobici$Ciclo_Estacion_Arribo)))
+ecobici$Ciclo_Estacion_Arribo <- as.numeric(ecobici$Ciclo_Estacion_Arribo)
+
+describe(ecobici)
+
+summary(ecobici)
+hist(unclass(ecobici$Genero_Usuario))
+ecobici[which(ecobici$Edad_Usuario > 80),]
+head(ecobici)
+
+count(ecobici)
+#9192076
+table(ecobici$Genero_Usuario)/nrow(ecobici)
+
+table(ecobici$Edad_Usuario)/nrow(ecobici)*100
 
 
 
@@ -84,6 +115,8 @@ axis(side = 1, at = seq(min(wday(ecobici$Fecha_Retiro)),max(wday(ecobici$Fecha_R
 hist(wday(ecobici$Fecha_Retiro), xlab="Horario", ylab="Viajes",main="Horarios de salidas de Ecobici entre semana")
 axis(side = 1, at = seq(min(wday(ecobici$Fecha_Retiro)),max(wday(ecobici$Fecha_Retiro)),1))
 
+table(wday(ecobici$Fecha_Retiro))
+
 par(mfrow=c(2,2))
 plot(table(hour(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) %in% c(2:6))])+minute(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) %in% c(2:6))])/60), xlab="Horario", ylab="Viajes",main="Horarios de salidas de Ecobici entre semana",xaxt="n")
 axis(side = 1, at = seq(0,24,2))
@@ -101,6 +134,8 @@ plot(table(hour(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) == 2)])+min
 axis(side = 1, at = seq(0,24,2))
 plot(table(hour(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) == 3)])+minute(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) == 3)])/60), xlab="Horario", ylab="Viajes",main="Horarios de salidas de Ecobici en fines de semana",xaxt="n")
 axis(side = 1, at = seq(0,24,2))
+plot(table(hour(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) == 4)])+minute(ecobici$Hora_Retiro[which(wday(ecobici$Fecha_Retiro) == 4)])/60), xlab="Horario", ylab="Viajes",main="Horarios de salidas de Ecobici en fines de semana",xaxt="n")
+axis(side = 1, at = seq(0,24,2))
 plot(table(hour(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) == 1)])+minute(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) ==1)])/60), xlab="Horario", ylab="Viajes",main="Horarios de llegadas de Ecobici entre semana",xaxt="n")
 axis(side = 1, at = seq(0,24,2))
 plot(table(hour(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) == 2)])+minute(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) ==2)])/60), xlab="Horario", ylab="Viajes",main="Horarios de llegadas de Ecobici en fin de semana",xaxt="n")
@@ -113,6 +148,9 @@ for(i in min(wday(ecobici$Fecha_Retiro)):max(wday(ecobici$Fecha_Retiro))){
   axis(side = 1, at = seq(0,24,2))
 }
 
+par(mfrow=c(1,1))
+hist(quarter(ecobici$Fecha_Retiro))
+
 par(mfrow=c(4,2))
 for(i in min(wday(ecobici$Fecha_Retiro)):max(wday(ecobici$Fecha_Retiro))){
   plot(table(hour(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) == i)])+minute(ecobici$Hora_Arribo[which(wday(ecobici$Fecha_Arribo) ==i)])/60), xlab="Horario", ylab="Viajes",main="Horarios de llegadas de Ecobici entre semana",xaxt="n")
@@ -121,7 +159,7 @@ for(i in min(wday(ecobici$Fecha_Retiro)):max(wday(ecobici$Fecha_Retiro))){
 
 table(wday(ecobici$Fecha_Retiro))
 table(day(ecobici$Fecha_Retiro))
-
+table(hour(ecobici$Hora_Retiro),month(ecobici$Fecha_Retiro))
 
 
 length(day(ecobici$Fecha_Retiro))/length(unique(day(ecobici$Fecha_Retiro)))

@@ -30,15 +30,19 @@ for(j in 1:length(url)) {
 getwd()
 setwd("/itam2/")
 setwd("../.././shp/")
-dir()
+dir("../")
 ####Mapa
 
-datos <- read.csv('estaciones.csv')
+datos <- read.csv('../estaciones.csv')
 glimpse(datos)
 #class(datos$latitud)
 #class(datos$longitud)
 #datos[,7:8]
 glimpse(datos)
+
+which(sort(datos$id)[1:444]-sort(datos$id)[2:445]!=-1)
+sort(datos$id)
+##No existen las estaciones 103 y 111
 
 # dat <- subset(asam_shp,
 #               DateOfOcc > as.Date("2015-01-01") &

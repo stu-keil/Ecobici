@@ -6,19 +6,19 @@
 # Denisse Martínez	159780 
 # Ariana López             160281
 # Stephane Keil		160559
-install.packages("lubridate")
-install.packages("ggplot2")
-install.packages("GGally")
+
+#install.packages("lubridate")
+#install.packages("ggplot2")
+#install.packages("GGally")
+
 library(dplyr)
 library(ggplot2)
 library(GGally)
 library(foreign)
-library(mvtnorm)
 library(lubridate)
 library(dplyr)
-library(mixtools)
 library(rgdal)
-library()
+
 
 rm(list = ls())
 getwd()
@@ -53,7 +53,7 @@ second(ecobici[[9]])
 wday(ecobici[[8]])
 
 
-#####Cargar 1 año 2012
+#####Cargar 1 año 2015
 #setwd("C:/Users/Stephane/Desktop/ITAM/EstadisticaComputacional/Proyecto_Final/Datos/2012")
 filename <- dir(".")[grep(".csv",dir("."))]
 filename_2015 <- grep("2015",filename)

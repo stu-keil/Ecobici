@@ -6,7 +6,7 @@ library(dplyr)
 
 rm(list = ls())
 getwd()
-setwd("/home/stuka/itam2/graph4ds/Ecobici/Viajes/")
+setwd("/home/stuka/itam2/graph4ds/Ecobici/data/viajes/")
 dir()
 
 ####Cargar 1 mes
@@ -15,11 +15,12 @@ dtype <- c("factor","numeric","numeric","numeric","character","character","numer
 ecobici <- read.csv(filename,header=TRUE,colClasses = dtype,na.strings = c("NA","lab009"))
 ecobici = tbl_df(ecobici)
 
-####Genero una muestra de 100 viajes aleatorios
-ecobici <- slice(ecobici,sample(nrow(ecobici),100))
 
-ecobici$Fecha_hora_retiro = ymd_hms(paste(ymd(ecobici$Fecha_Retiro), hms(ecobici$Hora_Retiro)))
-ecobici$Fecha_hora_arribo = ymd_hms(paste(ymd(ecobici$Fecha_Arribo), hms(ecobici$Hora_Arribo)))
+####Genero una muestra de 100 viajes aleatorios
+ecobici <- slice(ecobici,sample(nrow(ecobici),500))
+
+ecobici$Fecha_hora_retiro = ymd_hms(paste(ecobici$Fecha_Retiro, ecobici$Hora_Retiro))
+ecobici$Fecha_hora_arribo = ymd_hms(paste(ecobici$Fecha_Arribo, ecobici$Hora_Arribo))
 ecobici <- ecobici[,c(1,2,3,4,10,7,11)]
 
 
@@ -28,15 +29,17 @@ dir("..")
 ecobici_distancias <- read.csv('../distancias_estaciones_metros.csv')
 names(ecobici_distancias) <- c("Estacion_origen","Estacion_destino","Distancia_metros")
 glimpse(ecobici_distancias)
-rm(ecobici_distancias)
+
 
 ######## Limpieza y transformación de los datos
 
 ecobici <- left_join(ecobici,ecobici_distancias,by=c("Ciclo_Estacion_Retiro"="Estacion_origen","Ciclo_Estacion_Arribo"="Estacion_destino"))
-ecobici <- ecobici %>% mutate(Distancia_km = replace(Distancia_metros, Ciclo_Estacion_Retiro==Ciclo_Estacion_Arribo, 0))
-ecobici <- ecobici %>% transmute(Distancia_km = )
+rm(ecobici_distancias)
+ecobici <- ecobici %>% mutate(Distancia_metros = replace(Distancia_metros, Ciclo_Estacion_Retiro==Ciclo_Estacion_Arribo, 0)) %>% mutate(Distancia_km = Distancia_metros/1000.0) %>% mutate(Distancia_km = round(Distancia_km,2)) %>% select(-Distancia_metros)   
 
+
+ 
 ecobici$Duracion_viaje <- minute(as.period(difftime(ecobici$Fecha_hora_arribo,ecobici$Fecha_hora_retiro),minute))
 
 #### Exportar información a csv
-write.table(ecobici, "../temporal/ecobici_preprocessed.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+write.table(ecobici, "../../temporal/ecobici_preprocessed.csv", sep = ",", col.names = TRUE, row.names = FALSE)

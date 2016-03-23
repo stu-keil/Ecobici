@@ -1,0 +1,5 @@
+MATCH start_stations <-[:Retiro]- Viaje -[:Arribo]-> end_stations RETURN start_stations.nombre, end_stations.nombre, COUNT(*) AS cnt ORDER BY cnt DESC LIMIT 50 
+
+MATCH Bicla-[:Monta]-viajecito 
+  RETURN Bicla.id,count(*) 
+  ORDER BY count(*) DESC LIMIT 5;

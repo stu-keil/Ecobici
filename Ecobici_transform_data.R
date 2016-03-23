@@ -17,7 +17,7 @@ ecobici = tbl_df(ecobici)
 
 
 ####Genero una muestra de 100 viajes aleatorios
-ecobici <- slice(ecobici,sample(nrow(ecobici),500))
+ecobici <- slice(ecobici,sample(nrow(ecobici),10000))
 
 ecobici$Fecha_hora_retiro = ymd_hms(paste(ecobici$Fecha_Retiro, ecobici$Hora_Retiro))
 ecobici$Fecha_hora_arribo = ymd_hms(paste(ecobici$Fecha_Arribo, ecobici$Hora_Arribo))
@@ -39,7 +39,11 @@ ecobici <- ecobici %>% mutate(Distancia_metros = replace(Distancia_metros, Ciclo
 
 
  
-ecobici$Duracion_viaje <- minute(as.period(difftime(ecobici$Fecha_hora_arribo,ecobici$Fecha_hora_retiro),minute))
+ecobici$Duracion_viaje <- hour(as.period(difftime(ecobici$Fecha_hora_arribo,ecobici$Fecha_hora_retiro),hour))*60 + minute(as.period(difftime(ecobici$Fecha_hora_arribo,ecobici$Fecha_hora_retiro),minute))
+ecobici <- ecobici %>% mutate(Duracion_viaje = replace(Duracion_viaje, Duracion_viaje == 0 , 1))
+ecobici <- ecobici %>% filter(!is.na(Distancia_km))
+
+
 
 #### Exportar información a csv
 write.table(ecobici, "../../temporal/ecobici_preprocessed.csv", sep = ",", col.names = TRUE, row.names = FALSE)

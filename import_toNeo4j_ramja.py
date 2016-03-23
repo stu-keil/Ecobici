@@ -9,7 +9,7 @@ path = '/home/stuka/itam2/graph4ds/Ecobici/data'
 def parsea(renglon,contador):
 	renglon['FHRetiro']=time.mktime(time.strptime(renglon["Fecha_hora_retiro"],"%Y-%m-%d %H:%M:%S"))
 	renglon['FHArribo']=time.mktime(time.strptime(renglon["Fecha_hora_arribo"],"%Y-%m-%d %H:%M:%S"))
-	renglon['id']=cont
+	renglon['id']=contador
 	renglon['TipoUsuario']=renglon['Edad_Usuario']+renglon['Genero_Usuario']
 	if (float(renglon['Duracion_viaje']<=0.0)):
 		renglon['Duracion_viaje']='0.5'

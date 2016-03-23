@@ -1,5 +1,6 @@
 
 import time
+import datetime as datetime
 from py2neo import neo4j, authenticate, Graph
 
 
@@ -23,9 +24,27 @@ graph.cypher.execute("CREATE CONSTRAINT ON (f:FechaHora) ASSERT f.id IS UNIQUE;"
 import csv
 
 def parsea(renglon,contador):
-	renglon['FHRetiro']=time.mktime(time.strptime(renglon["Fecha_hora_retiro"],"%Y-%m-%d %H:%M:%S"))
-	renglon['FHArribo']=time.mktime(time.strptime(renglon["Fecha_hora_arribo"],"%Y-%m-%d %H:%M:%S"))
-	renglon['id']=cont
+	strRetiro= time.strptime(renglon["Fecha_hora_retiro"],"%Y-%m-%d %H:%M:%S")
+	renglon['FHRetiro']=time.mktime(strRetiro)
+	renglon['aRetiro']=strRetiro[0]	
+	renglon['mRetiro']=strRetiro[1]	
+	renglon['dRetiro']=strRetiro[2]	
+	renglon['nsRetiro']=datetime.datetime(renglon['aRetiro'],renglon['mRetiro'],renglon['dRetiro'],0,0).isocalendar()[1]
+	renglon['hRetiro']=strRetiro[3]	
+	renglon['mnRetiro']=strRetiro[4]	
+	renglon['sRetiro']=strRetiro[5]	
+	renglon['wdRetiro']=strRetiro[6]	
+	strArribo= time.strptime(renglon["Fecha_hora_arribo"],"%Y-%m-%d %H:%M:%S")
+	renglon['FHArribo']=time.mktime(strArribo)
+	renglon['aArribo']=strArribo[0]	
+	renglon['mArribo']=strArribo[1]	
+	renglon['dArribo']=strArribo[2]	
+	renglon['nsArribo']=datetime.datetime(renglon['aArribo'],renglon['mArribo'],renglon['dArribo'],0,0).isocalendar()[1]
+	renglon['hArribo']=strArribo[3]	
+	renglon['mnArribo']=strArribo[4]	
+	renglon['sArribo']=strArribo[5]	
+	renglon['wdArribo']=strArribo[6]	
+	renglon['id']=renglon['Bici']+renglon['Ciclo_Estacion_Retiro']+str(renglon['FHRetiro'])
 	renglon['TipoUsuario']=renglon['Edad_Usuario']+renglon['Genero_Usuario']
 	if (float(renglon['Duracion_viaje']<=0.0)):
 		renglon['Duracion_viaje']='0.5'
@@ -41,12 +60,36 @@ with open('/home/ramja/workspacePy/graf4ds/src/ecobici_preprocessed.csv','r') as
         query = """
         UNWIND {viaje} AS v
 
+        MERGE (fha:FechaHora {id:v.FHArribo})
+        SET fha.id = v.FHArribo,
+            fha.anio= v.aArribo,
+            fha.mes = v.mArribo,
+            fha.dia = v.dArribo,
+            fha.nsemana= v.nsArribo,
+            fha.hora = v.hArribo,
+            fha.minuto = v.mnArribo,
+            fha.segundo = v.sArribo,
+            fha.dsemana = v.wdArribo
+            
+        MERGE (fhr:FechaHora {id:v.FHRetiro})
+        SET fhr.id = v.FHRetiro,
+            fhr.anio= v.aRetiro,
+            fhr.mes = v.mRetiro,
+            fhr.dia = v.dRetiro,
+            fhr.nsemana= v.nsRetiro,
+            fhr.hora = v.hRetiro,
+            fhr.minuto = v.mnRetiro,
+            fhr.segundo = v.sRetiro,
+            fhr.dsemana = v.wdRetiro
+            
         MERGE (viaje:Viaje {id:v.id})
         SET viaje.id = v.id,
-            viaje.fechaHoraRetiro = v.FHRetiro,
-            viaje.fechaHoraArribo = v.FHArribo,
             viaje.velocidad = v.Velocidad
             
+        MERGE (viaje)-[:FHRetiro]->(fhr)
+
+        MERGE (viaje)-[:FHArribo]->(fha)
+
        	MERGE (estacion1:Estacion {id:v.Ciclo_Estacion_Retiro})
         SET estacion1.id = v.Ciclo_Estacion_Retiro
         

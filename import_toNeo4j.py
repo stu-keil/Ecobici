@@ -49,6 +49,40 @@ def load_stations(filename):
 
         except Exception as e:
             print e, row, reader.line_num
+            
+def load_distances(filename):
+    with open(filename, 'r+') as in_file:
+
+        reader = csv.reader(in_file, delimiter=',')
+        next(reader, None)        
+        batch = graph.cypher.begin()                           
+
+        try:
+            i = 0;
+            j = 0;
+            for row in reader:    
+                if row:
+                    station_origin_id = row[0]
+                    station_destination_id = row[1]
+                    distance = row[2]
+                    query = """
+                        merge (s:Station {Name: {a}, Colonia_Id:{b}, Colonia_Name:{c}, Station_ID:{d}, Postal_Code:{e}, Latitude:{f}, Longitude:{g}})        
+                    """
+                    batch.append(query, {"a":station_name, "b": colonia_id, "c": colonia_name, "d":station_id, "e":postal_code, "f":latitude, "g":longitude})
+                    i += 1
+                    j += 1
+                batch.process()
+
+                if (i == 1000): #submits a batch every 1000 lines read
+                    batch.commit()
+                    print j, "lines processed"
+                    i = 0                
+                    batch = graph.cypher.begin()
+            else: batch.commit() #submits remainder of lines read                       
+            print j, "lines processed"     
+
+        except Exception as e:
+            print e, row, reader.line_num
 
 def load_to_neo4j():
     # Connect to graph and add constraints.

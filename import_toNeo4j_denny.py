@@ -12,7 +12,7 @@ import datetime as datetime
 
 # Connect to graph and add constraints.
 url = "http://localhost:7474/db/data/"
-authenticate("localhost:7474", "neo4j", "denny1987")
+authenticate("localhost:7474", "neo4j", "test1234")
 graph = Graph(url)
 
 # Add uniqueness constraints.

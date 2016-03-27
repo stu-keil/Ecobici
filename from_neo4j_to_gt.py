@@ -1,6 +1,6 @@
 from py2neo import neo4j, authenticate
 from py2neo import Graph as NeoCon
-from graph_tool.all import * as gt
+from graph_tool.all import * 
 import time
 
 # Connect to graph and add constraints.
@@ -10,6 +10,12 @@ n4jpassw = "test1234"
 authenticate("localhost:7474", n4juser, n4jpassw)
 neocon = NeoCon(url)
 
+print "[Info]: getting stations from Neo4J"
+query = "match (n:Estacion) return n.nombre"
+results = neocon.cypher.execute(query)
+for estacion in results:
+    print(estacion['n.nombre'])
+    
 # setting up graph tool graph
 graph = Graph()
 vertex_list = []

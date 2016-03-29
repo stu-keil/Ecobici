@@ -27,7 +27,7 @@ head(ecobici)
 
 
 ####Genero una muestra de 1% viajes aleatorios
-ecobici <- slice(ecobici,sample(nrow(ecobici),(nrow(ecobici)*.01)))
+#ecobici <- slice(ecobici,sample(nrow(ecobici),(nrow(ecobici)*.01)))
 
 ecobici$Fecha_hora_retiro = ymd_hms(paste(ecobici$Fecha_Retiro, ecobici$Hora_Retiro))
 ecobici$Fecha_hora_arribo = ymd_hms(paste(ecobici$Fecha_Arribo, ecobici$Hora_Arribo))
@@ -55,4 +55,4 @@ ecobici <- ecobici %>% filter(!is.na(Distancia_km))
 
 
 #### Exportar información a csv
-write.table(ecobici, "../../temporal/ecobici_preprocessed_2015_sample.csv", sep = ",", col.names = TRUE, row.names = FALSE)
+#write.table(ecobici, "../../temporal/ecobici_preprocessed_2015_sample.csv", sep = ",", col.names = TRUE, row.names = FALSE)

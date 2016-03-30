@@ -31,13 +31,25 @@ import_toNeo4j_denny.py
 
 Ojo se intentó cargar la información de los viajes en paralelo, sin embargo, arrojó un error.
 
-- Una vez cargados a NEO4J debemos hacer un query para obtener los datos en formato "graphml" y poder correr algún algoritmo y tener una mejor visualización, por lo que se debe correr el script:
+- Una vez cargados a NEO4J debemos hacer un query para obtener los diferentes subgrafos y aplicar los distintos algoritmos por subgrafo, según los distintos períodos de tiempo, por lo que se debe correr el script:
 
 ```
 
-prueba_neo4j_to_gt.py
+Query_final.py
 
 ```
+
+Los resultados se almacenan en /resultados
+
+
+- El análisis de los resultados se puede ver en
+
+
+```
+analisis_resultados.R
+
+```
+
 
 
 

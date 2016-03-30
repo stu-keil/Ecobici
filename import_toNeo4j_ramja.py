@@ -2,6 +2,7 @@
 import time
 from py2neo import neo4j, authenticate, Graph
 import csv
+import datetime as datetime
 
 
 path = '/home/stuka/itam2/graph4ds/Ecobici/data'
@@ -169,6 +170,6 @@ graph.cypher.execute("CREATE CONSTRAINT ON (t:TipoUsuario) ASSERT t.id IS UNIQUE
 graph.cypher.execute("CREATE CONSTRAINT ON (f:FechaHora) ASSERT f.id IS UNIQUE;")
 
 load_stations(path+'/estaciones.csv')
-load_distances(path+'/distancias_estaciones_metros.csv')
-load_viajes('/home/stuka/itam2/graph4ds/Ecobici/temporal/ecobici_preprocessed.csv')
+#load_distances(path+'/distancias_estaciones_metros.csv')
+load_viajes('/home/stuka/itam2/graph4ds/Ecobici/temporal/ecobici_preprocessed_2015_sample.csv')
 

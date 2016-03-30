@@ -40,7 +40,7 @@ for estacion in results:
 query = """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
 WHERE fHora.hora IN [6,7,8,9,10,11,12] and fHora.dsemana IN [1,2,3,4,5]
 WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
-RETURN estIni.id, estFin.id, count(estIni.id), tipo.genero ORDER BY count(estIni.id) DESC"""
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC"""
 
 results = neocon.cypher.execute(query)
 

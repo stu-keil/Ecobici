@@ -87,6 +87,7 @@ RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
 descrip.append("else_we")
 
 
+grupos = list()
 for n in range(6):
     
     results = neocon.cypher.execute(query[n])
@@ -97,7 +98,6 @@ for n in range(6):
         viajes[arista] = weight
     
     graph.edge_properties['weight'] = viajes
-    graph.vertex_properties['nombre'] = nombre_estacion
     graph.vertex_properties['id'] = id_estacion
     
     g = graph
@@ -122,9 +122,14 @@ for n in range(6):
     data = pd.DataFrame(zip(lista,lista2))
     nombre_csv = './resultados/Est_Com_' + descrip[n] + '.csv'
     data.to_csv(nombre_csv,index=False,header=False)
-       
+    
+    
+    grupos.append(max(lista2) + 1)
     
     #numero de grupos
     state.B
     nombre_graph = './resultados/Est_Com_' + descrip[n] +'.graphml'
     graph.save(nombre_graph,fmt="graphml")
+    
+
+print(grupos)

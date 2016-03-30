@@ -37,44 +37,94 @@ for estacion in results:
     estaciones[estacion['id']] = len(vertex_list) -1
 
 # connecting estaciones
-query = """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
-WHERE fHora.hora IN [6,7,8,9,10,11,12] and fHora.dsemana IN [1,2,3,4,5]
+query_base= """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [6,7,8,9,10,11] and fHora.dsemana IN [1,2,3,4,5]
 WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
 RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC"""
 
-results = neocon.cypher.execute(query)
+descrip = list()
+query = list()
+#query 0
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [6,7,8,9,10,11] and fHora.dsemana IN [1,2,3,4,5]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("6-11_wd")
 
-for result in results:
-    weight = result['count(estIni.id)']
-    arista = graph.add_edge(estaciones[result['estIni.id']],estaciones[result['estFin.id']])
-    viajes[arista] = weight
+#query 1
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [12,13,14,15] and fHora.dsemana IN [1,2,3,4,5]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("12-15_wd")
 
-graph.edge_properties['weight'] = viajes
-graph.vertex_properties['nombre'] = nombre_estacion
-graph.vertex_properties['id'] = id_estacion
+#query 2
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [16,17,18,19,20] and fHora.dsemana IN [1,2,3,4,5]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("16_20_wd")
 
-g = graph
-state = graph_tool.community.minimize_blockmodel_dl(g, eweight=viajes, max_B=4)
-b = state.b
-pos = sfdp_layout(g)
-graph_draw(g, pos, vertex_fill_color=b, vertex_shape=b, output="./resultados/Est_Com_6-12_wd.png")
+#query 3
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [21,22,23,24,1,2,3,4,5] and fHora.dsemana IN [1,2,3,4,5]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("21_5_wd")
 
-#imprime los vertices
+#query 4 - fines de semana
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE fHora.hora IN [12,13,14,15] and fHora.dsemana IN [6,0]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("12-15_we")
 
-lista = []
-lista2 = []
-for v in g.vertices():
-    lista.append(id_estacion[g.vertex(v)])
-    lista2.append(state.get_blocks()[g.vertex(v)])
-    #print(v,id_estacion[g.vertex(v)],state.get_blocks()[g.vertex(v)])
- 
+#query 5 - fines de semana
+query.append( """MATCH p=(middle:Viaje)-[fechRet:FHRetiro] -> (fHora:FechaHora) 
+WHERE NOT(fHora.hora IN [12,13,14,15]) and fHora.dsemana IN [6,0]
+WITH middle MATCH (tipo:TipoUsuario) <-[s:RealizadoPor]-(middle:Viaje)-[retiro:Retiro]-> (estIni:Estacion),(fHoraArr:FechaHora)<-[fhArribo:FHArribo]- (middle:Viaje)-[arribo:Arribo]-> (estFin:Estacion),(estIni:Estacion)-[dist:Distancia]-(estFin:Estacion)
+RETURN estIni.id, estFin.id, count(estIni.id) ORDER BY count(estIni.id) DESC""")
+descrip.append("else_we")
 
-data = pd.DataFrame(zip(lista,lista2))
-data.to_csv("./resultados/Est_Com_6-12_wd.csv",index=False,header=False)
-   
-#/resultados/
 
-#numero de grupos
-state.B
-
-graph.save("./resultados/Est_Com_6-12_wd.graphml",fmt="graphml")
+for n in range(6):
+    
+    results = neocon.cypher.execute(query[n])
+    
+    for result in results:
+        weight = result['count(estIni.id)']
+        arista = graph.add_edge(estaciones[result['estIni.id']],estaciones[result['estFin.id']])
+        viajes[arista] = weight
+    
+    graph.edge_properties['weight'] = viajes
+    graph.vertex_properties['nombre'] = nombre_estacion
+    graph.vertex_properties['id'] = id_estacion
+    
+    g = graph
+    state = graph_tool.community.minimize_blockmodel_dl(g, eweight=viajes)
+    b = state.b
+    pos = sfdp_layout(g)
+    
+    
+    output_arch = './resultados/Est_Com_'+ descrip[n]+'.png'
+    graph_draw(g, pos, vertex_fill_color=b, vertex_shape=b, output = output_arch)
+    
+    #imprime los vertices
+    
+    lista = []
+    lista2 = []
+    for v in g.vertices():
+        lista.append(id_estacion[g.vertex(v)])
+        lista2.append(state.get_blocks()[g.vertex(v)])
+        #print(v,id_estacion[g.vertex(v)],state.get_blocks()[g.vertex(v)])
+     
+    
+    data = pd.DataFrame(zip(lista,lista2))
+    nombre_csv = './resultados/Est_Com_' + descrip[n] + '.csv'
+    data.to_csv(nombre_csv,index=False,header=False)
+       
+    
+    #numero de grupos
+    state.B
+    nombre_graph = './resultados/Est_Com_' + descrip[n] +'.graphml'
+    graph.save(nombre_graph,fmt="graphml")
